@@ -1,23 +1,76 @@
-function mapToElementLengthTypes(array: { length: number }[]): number[] {
-    return array.map(e => e.length);
+type UserTypes = string;
+type CommentsType = string;
+
+let myUserType: UserTypes = "Admin";
+let myCommentType: CommentsType = "Public";
+
+type AccessMode = 1 | 2 | 3 | 4 | 5;
+
+type BiggerType = {
+    commonProperty: string;
+    additionalProperty: string;
 }
 
-const map1 = mapToElementLengthTypes(["this", "works!"]);
-console.log('map1:', map1);
-const map2 = mapToElementLengthTypes(["this", "works!", [3, 5, 7, 3]]);
-console.log('map2:', map2);
-const map3 = mapToElementLengthTypes(["this", "works!", [3, 5, 7, 3]], 5);
-
-function enrichWithIndex(array: any[]): { index: number, value: any }[] {
-    return array.map((e, index) => ({ value: e, index }));
+type SmallerType = {
+    commonProperty: string;
+    anotherOneProperty: string;
 }
 
-const result = enrichWithIndex(["hey", "there", "whats up"]);
-console.log(result[0].value.notExistingMethod());
-
-function enrichWithIndexTyped<T>(array: T[]): { index: number, value: T }[] {
-    return array.map((e, index) => ({ value: e, index }));
+function showProperty(someObject: SmallerType) {
+    return someObject.commonProperty;
 }
 
-const result2 = enrichWithIndexTyped(["hey", "there", "whats up"]);
-console.log(result2[0].value.notExistingMethod());
+// const bigger: BiggerType = {
+//     commonProperty: 'test',
+//     additionalProperty: 'test',
+// };
+
+// showProperty(bigger);
+
+type SomeFunction = (someObject: SmallerType) => string;
+
+let func: SomeFunction = showProperty;
+
+function showCommonProperty(objectWithCommonProperty: BiggerType | SmallerType) {
+    return objectWithCommonProperty.commonProperty;
+}
+
+const objectTest: BiggerType & SmallerType = {
+    commonProperty: 'TypeScript',
+    additionalProperty: 'is',
+    anotherOneProperty: 'fantastic!',
+};
+
+type NewType = {
+    bigger: BiggerType,
+    smaller: SmallerType,
+};
+
+// type NewType = {}; Error! Duplicate identifier 'NewType'.
+
+function log(obj: NewType) {
+    console.log(obj.bigger.additionalProperty);
+    console.log(obj.smaller.anotherOneProperty);
+}
+
+interface Point {
+    x: number,
+    y: number,
+}
+
+interface Point {
+    description: string,
+}
+
+const point: Point = {
+    x: 2,
+    y: 0,
+    description: 'Property \'description\' is missing in type \'{ x: number; y: number; }\' but required in type \'Point\'.ts(2741)',
+};
+
+const exampleObject = {
+    a: 'Wrocław',
+    b: 4,
+} as const;
+
+// exampleObject.a = 'Tarnów'; Error! Cannot assign to 'a' because it is a read-only property.ts(2540)
