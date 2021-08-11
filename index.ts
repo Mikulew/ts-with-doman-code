@@ -1,76 +1,151 @@
-type UserTypes = string;
-type CommentsType = string;
-
-let myUserType: UserTypes = "Admin";
-let myCommentType: CommentsType = "Public";
-
-type AccessMode = 1 | 2 | 3 | 4 | 5;
-
-type BiggerType = {
-    commonProperty: string;
-    additionalProperty: string;
+enum Frameworks {
+    REACT,
+    VUE,
+    ANGULAR,
+    DOT_NET,
+    LARAVEL,
+    NEST,
 }
 
-type SmallerType = {
-    commonProperty: string;
-    anotherOneProperty: string;
+enum TestingTypes {
+    UNIT,
+    MANUAL,
+    E2E,
 }
 
-function showProperty(someObject: SmallerType) {
-    return someObject.commonProperty;
+type FrontendFrameworks = Frameworks.REACT | Frameworks.VUE | Frameworks.ANGULAR;
+type BackendFrameworks = Frameworks.DOT_NET | Frameworks.LARAVEL | Frameworks.NEST;
+
+type Employee = {
+    firstName: string,
+    lastName: string,
+    age: number,
+    pesel: number,
 }
 
-// const bigger: BiggerType = {
-//     commonProperty: 'test',
-//     additionalProperty: 'test',
-// };
+type FrontendDev = {
+    frontendFramework: FrontendFrameworks,
+} & Employee;
 
-// showProperty(bigger);
+type BackendDev = {
+    backendFramework: BackendFrameworks,
+} & Employee;
 
-type SomeFunction = (someObject: SmallerType) => string;
+type QADev = {
+    typeOfTesting: TestingTypes.UNIT | TestingTypes.MANUAL | TestingTypes.E2E,
+} & Employee;
 
-let func: SomeFunction = showProperty;
+// interface FrontendDevCollection {
+//     devs: Array<FrontendDev>;
+//     addDev(newDev: FrontendDev): void;
+//     getDev(pesel: number): FrontendDev | null;
+//     removeDev(pesel: number): void;
+//     updateDev(pesel: number, newData: FrontendDev): void;
+// }
 
-function showCommonProperty(objectWithCommonProperty: BiggerType | SmallerType) {
-    return objectWithCommonProperty.commonProperty;
+// class FrontendDevDatabase implements FrontendDevCollection {
+//     devs: Array<FrontendDev> = [];
+
+//     addDev(newDev: FrontendDev) {
+//         this.devs.push(newDev);
+//     }
+
+//     getDev(pesel: number) { 
+//         return this.devs.find(dev => dev.pesel === pesel) ?? null;
+//     }
+
+//     removeDev(pesel: number) {
+//         this.devs.filter(dev => dev.pesel !== pesel);
+//     }
+
+//     updateDev(pesel: number, newData: FrontendDev) {
+//         this.devs = this.devs.map(dev => {
+//             if (dev.pesel === pesel) {
+//                 return { ...dev, ...newData };
+//             }
+//             return dev;
+//         })
+//     }
+// }
+
+interface Collection<T> {
+    devs: Array<T>;
+    addDev(newDev: T): void;
+    getDev(pesel: number): T | null;
+    removeDev(pesel: number): void;
+    updateDev(pesel: number, newData: T): void;
+}
+class EmployeeDatabase<T extends Employee> implements Collection<T> {
+    devs: Array<T> = [];
+
+    addDev(newDev: T) {
+        this.devs.push(newDev);
+    }
+
+    getDev(pesel: number) { 
+        return this.devs.find(dev => dev.pesel === pesel) ?? null;
+    }
+
+    removeDev(pesel: number) {
+        this.devs.filter(dev => dev.pesel !== pesel);
+    }
+
+    updateDev(pesel: number, newData: T) {
+        this.devs = this.devs.map(dev => {
+            if (dev.pesel === pesel) {
+                return { ...dev, ...newData };
+            }
+            return dev;
+        })
+    }
 }
 
-const objectTest: BiggerType & SmallerType = {
-    commonProperty: 'TypeScript',
-    additionalProperty: 'is',
-    anotherOneProperty: 'fantastic!',
-};
+// const frontendDevsDatabase = new FrontendDevDatabase();
 
-type NewType = {
-    bigger: BiggerType,
-    smaller: SmallerType,
-};
+// frontendDevsDatabase.addDev({
+//     firstName: 'Mikołaj',
+//     lastName: 'Lewandowski',
+//     pesel: 44011122233,
+//     age: 30,
+//     frontendFramework: Frameworks.REACT,
+// })
 
-// type NewType = {}; Error! Duplicate identifier 'NewType'.
+// const backendDevsDatabase = new BackendDevsDatabase();
 
-function log(obj: NewType) {
-    console.log(obj.bigger.additionalProperty);
-    console.log(obj.smaller.anotherOneProperty);
-}
+// backendDevsDatabase.addDev({
+//     firstName: 'Mateusz',
+//     lastName: 'Domański',
+//     age: 31,
+//     pesel: 12345678901,
+//     backendFramework: Frameworks.NEST,
+// });
 
-interface Point {
-    x: number,
-    y: number,
-}
+const frontendDevsDatabase = new EmployeeDatabase<FrontendDev>();
 
-interface Point {
-    description: string,
-}
+frontendDevsDatabase.addDev({
+    firstName: 'Mikołaj',
+    lastName: 'Lewandowski',
+    pesel: 44011122233,
+    age: 30,
+    frontendFramework: Frameworks.REACT,
+})
 
-const point: Point = {
-    x: 2,
-    y: 0,
-    description: 'Property \'description\' is missing in type \'{ x: number; y: number; }\' but required in type \'Point\'.ts(2741)',
-};
+const backendDevsDatabase = new EmployeeDatabase<BackendDev>();
 
-const exampleObject = {
-    a: 'Wrocław',
-    b: 4,
-} as const;
+backendDevsDatabase.addDev({
+    firstName: 'Mateusz',
+    lastName: 'Domański',
+    age: 31,
+    pesel: 12345678901,
+    backendFramework: Frameworks.NEST,
+});
 
-// exampleObject.a = 'Tarnów'; Error! Cannot assign to 'a' because it is a read-only property.ts(2540)
+const qaDevsDatabase = new EmployeeDatabase<QADev>();
+
+qaDevsDatabase.addDev({
+    firstName: "Jan",
+    lastName: "Kowalski",
+    age: 49,
+    pesel: 11222333444,
+    typeOfTesting: TestingTypes.MANUAL,
+});
