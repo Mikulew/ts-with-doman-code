@@ -1,32 +1,41 @@
+type UserId = number | string | null | undefined;
+type NonNullableUserId = NonNullable<UserId>;
+
+const userId: NonNullableUserId = null; // Type 'null' is not assignable to type 'NonNullableUserId'.
+
+function someFunction(age: number, id: number, firstName: string, lastName: string) {
+    console.log(age, id, firstName, lastName);
+}
+
+type SomeFunction = Parameters<typeof someFunction>; // [age: number, id: number, firstName: string, lastName: string]
+
+const parametersForOurFunction: SomeFunction = [4, 15, 'Aleksander', 'Krawiec'];
+
+someFunction(...parametersForOurFunction);
+
+class User {
+    constructor(
+        public age: number,
+        public id: number,
+        public firstName: string,
+        public lastName: string,
+    ) {}
+}
+
+type UserClassParameters = ConstructorParameters<typeof User>; // [age: number, id: number, firstName: string, lastName: string]
+
+const newUserParams: UserClassParameters = [4, 15, 'Dominik', 'Szewc'];
+
+new User(...newUserParams);
+
 type Person = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    age: number;
+    age: number,
+    firstName: string,
+    lastName: string,
 }
 
-function updateUserFirstName(id: number, personToUpdate: Pick<Person, 'firstName'>) {
-    personToUpdate.firstName // OK
-    personToUpdate.lastName // Property 'lastName' does not exist on type 'Pick<Person, "firstName">'.
-    personToUpdate.age // Property 'age' does not exist on type 'Pick<Person, "firstName">'.
-    personToUpdate.id // Property 'id' does not exist on type 'Pick<Person, "firstName">'.
+function gerFirstName(person: Person) {
+    return person.age;
 }
 
-function updatePerson(id: number, personToUpdate: Omit<Person, 'id'>) {
-    personToUpdate.firstName // OK
-    personToUpdate.lastName // OK
-    personToUpdate.age // OK
-    personToUpdate.id // Property 'id' does not exist on type 'Omit<Person, "id">'.
-}
-
-type TechnologiesInOurCompany = 'React' | 'JavaScript' | 'TypeScript' | 'C#' | '.NET' | 'Cypress';
-type BackendTechnologiesInOurCompany = 'C#' | '.NET';
-type FrontendTechnologiesInOurCompany = Exclude<TechnologiesInOurCompany, BackendTechnologiesInOurCompany>;
-
-const jsDevOnFrontendGood: FrontendTechnologiesInOurCompany = 'TypeScript'; // OK
-const jsDevOnFrontendBad: FrontendTechnologiesInOurCompany = '.NET'; // Type '".NET"' is not assignable to type 'FrontendTechnologiesInOurCompany'.
-
-type MikulewDev = 'Vue' | 'React' | 'JavaScript' | 'TypeScript';
-
-const newProjectGood: Extract<TechnologiesInOurCompany, MikulewDev> = 'React'; // OK
-const newProjectBad: Extract<TechnologiesInOurCompany, MikulewDev> = 'Vue'; // Type '"Vue"' is not assignable to type '"React" | "JavaScript" | "TypeScript"'.
+const age: ReturnType<typeof gerFirstName> = 31;
