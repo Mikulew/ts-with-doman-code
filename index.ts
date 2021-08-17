@@ -2,61 +2,31 @@ type Person = {
     id: number;
     firstName: string;
     lastName: string;
+    age: number;
 }
 
-const mateusz = {
-    id: 0,
-    firstName: 'Mateusz',
-    lastName: 'Domański',
-};
-
-const mateuszUpdated = {
-    id: 1,
-};
-
-function updatePerson(id: number, person: Partial<Person>) {};
-
-function anotherUpdate(oldData: Person, newData: Partial<Person>) {
-    return { ...oldData, ...newData };
+function updateUserFirstName(id: number, personToUpdate: Pick<Person, 'firstName'>) {
+    personToUpdate.firstName // OK
+    personToUpdate.lastName // Property 'lastName' does not exist on type 'Pick<Person, "firstName">'.
+    personToUpdate.age // Property 'age' does not exist on type 'Pick<Person, "firstName">'.
+    personToUpdate.id // Property 'id' does not exist on type 'Pick<Person, "firstName">'.
 }
 
-const newNameOfPerson = {
-    firstName: 'Cyprian',
-};
-
-updatePerson(0, newNameOfPerson);
-anotherUpdate(mateusz, mateuszUpdated);
-
-type Emplpoyee = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    jobPosition?: string;
+function updatePerson(id: number, personToUpdate: Omit<Person, 'id'>) {
+    personToUpdate.firstName // OK
+    personToUpdate.lastName // OK
+    personToUpdate.age // OK
+    personToUpdate.id // Property 'id' does not exist on type 'Omit<Person, "id">'.
 }
 
-const newFrontendDev: Required<Emplpoyee> = {
-    id: 89,
-    firstName: 'Aleksander',
-    lastName: 'Jarosiński',
-}; // Property 'jobPosition' is missing in type '{ id: number; firstName: string; lastName: string; }' but required in type 'Required<Emplpoyee>'.
+type TechnologiesInOurCompany = 'React' | 'JavaScript' | 'TypeScript' | 'C#' | '.NET' | 'Cypress';
+type BackendTechnologiesInOurCompany = 'C#' | '.NET';
+type FrontendTechnologiesInOurCompany = Exclude<TechnologiesInOurCompany, BackendTechnologiesInOurCompany>;
 
-type NamesKey = 'mateusz' | 'joanna' | 'cyprian';
-type MyFamily = Record<NamesKey, Person>;
+const jsDevOnFrontendGood: FrontendTechnologiesInOurCompany = 'TypeScript'; // OK
+const jsDevOnFrontendBad: FrontendTechnologiesInOurCompany = '.NET'; // Type '".NET"' is not assignable to type 'FrontendTechnologiesInOurCompany'.
 
-const myFamily: MyFamily = {
-    mateusz: {
-        id: 1,
-        firstName: 'Mateusz',
-        lastName: 'Domański',
-    },
-    joanna: {
-        id: 2,
-        firstName: 'Joanna',
-        lastName: 'Bączkowska',
-    },
-    cyprian: {
-        id: 1,
-        firstName: 'Cyprian',
-        lastName: 'Koziński',
-    },
-};
+type MikulewDev = 'Vue' | 'React' | 'JavaScript' | 'TypeScript';
+
+const newProjectGood: Extract<TechnologiesInOurCompany, MikulewDev> = 'React'; // OK
+const newProjectBad: Extract<TechnologiesInOurCompany, MikulewDev> = 'Vue'; // Type '"Vue"' is not assignable to type '"React" | "JavaScript" | "TypeScript"'.
